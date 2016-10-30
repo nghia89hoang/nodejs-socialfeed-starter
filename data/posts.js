@@ -96,7 +96,7 @@ module.exports = {
       console.log('Something Wrong')
       throw new Error('can not retweet')
     }
-    const ret = await twitter.promise.post('statuses/retweet/'+id, {status: content, in_reply_to_status_id: id})
+    const ret = await twitter.promise.post('statuses/retweet/'+id)
     return ret
   },
   reply: async (user, config, id, content) => {
