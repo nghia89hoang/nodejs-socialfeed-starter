@@ -43,10 +43,11 @@
                     <i class="fa <%= post.liked ? "fa-thumbs-up" : "fa-thumbs-o-up" %> fa-2x _like" name="like<%= post.id %>"></i> 
                     <a href="/reply/<%= post.id %>" class="fa fa-reply fa-2x"></a>
                     <a href="/share/<%= post.id %>" class="fa fa-share-square-o fa-2x"></a>
+                    Post at: <%- post.timeStamp%>
                 </div>
             </div>
             <div class="col-xs-2">
-                <span class="btn <%= post.network.class %>"><span class="fa fa-<%= post.network.icon %>"></span> <%= post.network.name %></a>
+                <span class="btn <%= post.network.class %>"><span class="fa fa-<%= post.network.icon %>"></span> <%= post.network.name %></a>                
             </div>
         </div>
     <% } %>

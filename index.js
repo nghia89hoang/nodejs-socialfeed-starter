@@ -12,7 +12,7 @@ let flash = require('connect-flash')
 let passportMiddleware = require('./app/middlewares/passport')
 
 const NODE_ENV = process.env.NODE_ENV
-
+console.log(NODE_ENV)
 let app = express(),
   config = requireDir('./config', {recurse: true}),
   port = process.env.PORT || 8000
@@ -22,6 +22,7 @@ app.passport = passportMiddleware.passport
 
 // connect to the database
 mongoose.connect(config.database[NODE_ENV].url)
+mongoose.promise = global.Promise
 
 // set up our express middleware
 app.use(morgan('dev')) // log every request to the console
@@ -35,6 +36,8 @@ app.set('view engine', 'ejs') // set up ejs for templating
 // required for passport
 app.use(session({
   secret: 'ilovethenodejs',
+  // maxAge: 360 * 5,  
+  // cookie: {secure: true},
   store: new MongoStore({db: 'social-feeder'}),
   resave: true,
   saveUninitialized: true
