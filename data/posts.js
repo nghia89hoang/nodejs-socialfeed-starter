@@ -43,7 +43,7 @@ const fakePost = [
     }
   },
 ]
-const cachePosts = []
+// const cachePosts = []
 function configureTwitter(user, config){
   let conf = {
       consumer_key: config['twitter'].consumerKey,
@@ -72,20 +72,20 @@ function tweetToPost(tweet) {
   }
 }
 module.exports = {
-  cachePosts,
+  // cachePosts,
   fakePost,
   getTweets: async (user, config) => {
     const twitter = configureTwitter(user, config)
     let posts = []
-    console.log('Get tweets Begin')
+    // console.log('Get tweets Begin')
     if (twitter && user.twitter) {
-      console.log('Getting tweets...')
+      // console.log('Getting tweets...')
       const tweets = await twitter.promise.get('statuses/home_timeline', {count: 20})      
       // console.log(`Tweets: ${JSON.stringify(tweets[0])}`)
       posts = tweets.map(tweet => {
         return tweetToPost(tweet)       
       })
-      _.union(cachePosts, posts)
+      // _.union(cachePosts, posts)
     }
     return posts
   },

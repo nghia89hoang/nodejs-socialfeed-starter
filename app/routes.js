@@ -74,7 +74,7 @@ module.exports = (app) => {
   app.get('/timeline', isLoggedIn, (req, res) => {
     return (async () => {      
       const posts = await feeder.getTweets(req.user, config.auth[NODE_ENV])
-      console.log(`POST get: ${JSON.stringify(posts)}`)      
+      // console.log(`POST get: ${JSON.stringify(posts)}`)
       res.render('timeline', {
         message: req.flash('error'),
         posts: posts
