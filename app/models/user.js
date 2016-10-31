@@ -27,8 +27,8 @@ userSchema.methods.generateHash = async function(password) {
   return hash.toString('hex')
 }
 
-userSchema.methods.validatePassword = async function(password) {
-  let hash = await crypto.promise.pbkdf2(password, 'PEPPER', 4096, 512, 'sha256')
+userSchema.methods.validatePassword = async function(password) {  
+  let hash = await crypto.promise.pbkdf2(password, 'PEPPER', 4096, 512, 'sha256')  
   return hash.toString('hex') === this.local.password
 }
 
@@ -50,7 +50,7 @@ userSchema.methods.twitterUpdateAccount = function ({profile, token, secretToken
 }
 userSchema.methods.updateAccount = function (providerName, {profile, token, secretToken}) {
   let updateMethod = `${providerName}UpdateAccount`
-  console.log(`${JSON.stringify(this)}`)
+  // console.log(`${JSON.stringify(this)}`)
   return this[providerName + 'UpdateAccount']({profile, token, secretToken})
 }
 

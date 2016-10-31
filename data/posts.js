@@ -104,7 +104,7 @@ module.exports = {
     const twitter = configureTwitter(user, config)
     if (!twitter || !user.twitter) {
       console.log('Something Wrong')
-      throw new Error('can not retweet')
+      return      
     }    
     if (id != null) {
       return await twitter.promise.post('statuses/update/', {status: content, in_reply_to_status_id: id, quoted_status : content})
@@ -117,6 +117,7 @@ module.exports = {
     if (twitter && user.twitter) {
       tweet = await twitter.promise.get('statuses/show/' + id)      
       console.log(`Tweets: ${JSON.stringify(tweet)}`)
+      console.log(``)
     }    
     return tweetToPost(tweet)
   },

@@ -72,9 +72,6 @@ module.exports = (app) => {
     })
   })
   app.get('/timeline', isLoggedIn, (req, res) => {
-    // res.header("Cache-Control", "no-cache, no-store, must-revalidate")
-    // res.header("Pragma", "no-cache")
-    // res.header("Expires", 0)
     return (async () => {      
       const posts = await feeder.getTweets(req.user, config.auth[NODE_ENV])
       console.log(`POST get: ${JSON.stringify(posts)}`)      
@@ -83,18 +80,10 @@ module.exports = (app) => {
         posts: posts
       })
     })().catch(err => {
-      console.log('Error geting timeline...' + err)
-      res.render('timeline', {
-        message: 'Err: ' + err,
-        posts: feeder.cachePosts
-      })
+      req.flash('error', JSON.stringify(err))
+      res.redirect('/timeline')
     })
   })
-  app.get('/compose', isLoggedIn, (req, res) => {
-    res.render('compose', {
-      message: req.flash('error')
-    })
-  })  
   app.get('/logout', (req, res) => {
     req.logout()
     res.redirect('/')
@@ -117,13 +106,13 @@ module.exports = (app) => {
   app.post('/share/:id', isLoggedIn, bodyParser.json(), (req, res) => {
     return (async() => {
       console.log('ReTweeting ...' + req.body.share)
-      const post = await feeder.reTweet(req.user, config.auth[NODE_ENV], req.params.id, req.body.share)
+      const retweet = req.body.share + ` https://twitter.com/${req.user.twitter.userName}/status/${req.params.id}`
+      const post = await feeder.reTweet(req.user, config.auth[NODE_ENV], req.params.id, retweet)
+      await feeder.reply(req.user, config.auth[NODE_ENV], null, retweet)
       res.redirect('/timeline')
     })().catch(err => {
-      res.render('share', {
-        message: JSON.stringify(err),
-        post: {}
-      })
+      req.flash('error', JSON.stringify(err))
+      res.redirect('/share/' + req.params.id)
     })
   })
   app.get('/reply/:id', isLoggedIn, (req, res) => {
@@ -136,7 +125,7 @@ module.exports = (app) => {
       })
     })().catch(err => {      
       res.render('reply', {
-        message: err,
+        message:JSON.stringify(err),
         post: {}
       })
     })
@@ -146,11 +135,9 @@ module.exports = (app) => {
       console.log('Reply Begin')
       const post = await feeder.reply(req.user, config.auth[NODE_ENV], req.params.id, req.body.reply)
       res.redirect('/timeline')
-    })().catch(err => {      
-      res.render('reply', {
-        message: err,
-        post: {}
-      })
+    })().catch(err => {
+      req.flash('error', JSON.stringify(err))
+      res.redirect('/reply/' + req.params.id)
     })
   })
   app.get('/compose', isLoggedIn, (req, res) => {               
@@ -163,9 +150,8 @@ module.exports = (app) => {
       const post = await feeder.reply(req.user, config.auth[NODE_ENV], null, req.body.reply)
       res.redirect('/timeline')
     })().catch(err => {      
-      res.render('compose', {
-        message: err        
-      })
+      req.flash('error', JSON.stringify(err))
+      res.redirect('/compose')
     })
   })
   app.post('/like/:id', isLoggedIn, (req, res) => {

@@ -59,7 +59,7 @@ const localLoginCB = (email, password, done) => {
     let user = await User.promise.findOne({'local.email': email})
     if (!user) {
       return Promise.reject('Invalid email')
-    } else if(!await user.validatePassword()) {
+    } else if(!await user.validatePassword(user.local.password)) {
       return Promise.reject('Invalid Password')
     }
     return Promise.resolve(user)
