@@ -84,8 +84,7 @@ module.exports = {
       // console.log(`Tweets: ${JSON.stringify(tweets[0])}`)
       posts = tweets.map(tweet => {
         return tweetToPost(tweet)       
-      })
-      // _.union(cachePosts, posts)
+      })      
     }
     return posts
   },

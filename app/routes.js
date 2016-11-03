@@ -71,99 +71,96 @@ module.exports = (app) => {
       message: req.flash('error')
     })
   })
-  app.get('/timeline', isLoggedIn, (req, res) => {
-    return (async () => {      
+  app.get('/timeline', isLoggedIn, async (req, res) => {  
+    try{
       const posts = await feeder.getTweets(req.user, config.auth[NODE_ENV])
       // console.log(`POST get: ${JSON.stringify(posts)}`)
       res.render('timeline', {
         message: req.flash('error'),
         posts: posts
       })
-    })().catch(err => {
+    }    
+    catch(err){
       req.flash('error', JSON.stringify(err))
       res.redirect('/timeline')
-    })
+    }
   })
   app.get('/logout', (req, res) => {
     req.logout()
     res.redirect('/')
   })
-  app.get('/share/:id', isLoggedIn, (req, res) => {
-    return (async() => {
+  app.get('/share/:id', isLoggedIn, async (req, res) => {
+    try {
       console.log('Get tweet Begin')
       const post = await feeder.getTweet(req.user, config.auth[NODE_ENV], req.params.id)
       res.render('share', {
         message: req.flash('error'),
         post: post
       })
-    })().catch(err => {
+    } catch(err) {
       res.render('share', {
         message: err,
         post: {}
       })
-    })
-  })  
-  app.post('/share/:id', isLoggedIn, bodyParser.json(), (req, res) => {
-    return (async() => {
+    }
+  })
+  app.post('/share/:id', isLoggedIn, bodyParser.json(), async (req, res) => {
+    try{
       console.log('ReTweeting ...' + req.body.share)
       const retweet = req.body.share + ` https://twitter.com/${req.user.twitter.userName}/status/${req.params.id}`
       const post = await feeder.reTweet(req.user, config.auth[NODE_ENV], req.params.id, retweet)
-      await feeder.reply(req.user, config.auth[NODE_ENV], null, retweet)
+      await feeder.reply(req.user, config.auth[NODE_ENV], req.params.id, retweet)
       res.redirect('/timeline')
-    })().catch(err => {
+    } catch(err) {
       req.flash('error', JSON.stringify(err))
       res.redirect('/share/' + req.params.id)
-    })
+    }
   })
-  app.get('/reply/:id', isLoggedIn, (req, res) => {
-    return (async() => {
+  app.get('/reply/:id', isLoggedIn, async (req, res) => {
+    try {
       console.log('Get tweet Begin')
       const post = await feeder.getTweet(req.user, config.auth[NODE_ENV], req.params.id)
       res.render('reply', {
         message: req.flash('error'),
         post: post
       })
-    })().catch(err => {      
+    } catch(err) {      
       res.render('reply', {
         message:JSON.stringify(err),
         post: {}
       })
-    })
+    }
   })
-  app.post('/reply/:id', isLoggedIn, bodyParser.json(), (req, res) => {
-    return (async() => {
+  app.post('/reply/:id', isLoggedIn, bodyParser.json(), async (req, res) => {
+    try {
       console.log('Reply Begin')
       const post = await feeder.reply(req.user, config.auth[NODE_ENV], req.params.id, req.body.reply)
       res.redirect('/timeline')
-    })().catch(err => {
+    } catch(err) {
       req.flash('error', JSON.stringify(err))
       res.redirect('/reply/' + req.params.id)
-    })
+    }
   })
   app.get('/compose', isLoggedIn, (req, res) => {               
     res.render('compose', {
       message: req.flash('error')        
     })
   })
-  app.post('/compose', isLoggedIn, bodyParser.json(), (req, res) => {
-    return (async() => {
+  app.post('/compose', isLoggedIn, bodyParser.json(), async (req, res) => {
+    try{
       const post = await feeder.reply(req.user, config.auth[NODE_ENV], null, req.body.reply)
       res.redirect('/timeline')
-    })().catch(err => {      
+    } catch(err) {      
       req.flash('error', JSON.stringify(err))
       res.redirect('/compose')
-    })
+    }
   })
-  app.post('/like/:id', isLoggedIn, (req, res) => {
-    return (async() => {
-      await feeder.likeTweet(req.user, config.auth[NODE_ENV], req.params.id)
-      req.end()
-    })()
+  app.post('/like/:id', isLoggedIn, async (req, res) => {  
+    await feeder.likeTweet(req.user, config.auth[NODE_ENV], req.params.id)
+    req.end()    
   })
-  app.post('/unlike/:id', isLoggedIn, (req, res) => {
-    return (async() => {
-      await feeder.unlikeTweet(req.user, config.auth[NODE_ENV], req.params.id)
-      req.end()
-    })()
+  app.post('/unlike/:id', isLoggedIn, async (req, res) => {    
+    await feeder.unlikeTweet(req.user, config.auth[NODE_ENV], req.params.id)
+    req.end()    
   })
 }
